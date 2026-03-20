@@ -1,6 +1,6 @@
-# 🚀 Production-Ready Cloud REST API on AWS
+#  Production-Ready Cloud REST API on AWS
 
-## 🌟 Project Summary
+##  Project Summary
 
 This project is a production-style cloud application designed and deployed on AWS using industry-standard practices.
 
@@ -14,7 +14,7 @@ This is not a tutorial project. It reflects how real systems are built and opera
 
 ---
 
-## 🧠 What This Project Proves
+##  What This Project Proves
 
 - I can design and explain cloud systems end-to-end
 - I understand AWS networking, compute, and security fundamentals
@@ -24,7 +24,7 @@ This is not a tutorial project. It reflects how real systems are built and opera
 
 ---
 
-## 🏗️ Architecture Overview
+##  Architecture Overview
 
 ### Request Flow
 
@@ -84,7 +84,7 @@ Client → Load Balancer → Application Server → Response
 
 ---
 
-## 🚀 Key Features
+##  Key Features
 
 - Custom VPC with public subnets
 - Secure IAM roles (no hardcoded credentials)
@@ -116,7 +116,7 @@ Every push triggers:
 
 ---
 
-## 📊 Monitoring & Observability
+##  Monitoring & Observability
 
 - Logs streamed to CloudWatch
 - Metrics tracked for system health
@@ -124,7 +124,7 @@ Every push triggers:
 
 ---
 
-## 🧠 Key Engineering Decisions
+##  Key Engineering Decisions
 
 ### Why EC2?
 
@@ -150,7 +150,7 @@ Every push triggers:
 
 ---
 
-## 📦 Setup Instructions
+##  Setup Instructions
 
 ### Clone Repository
 
@@ -189,7 +189,7 @@ npm run dev
 
 ---
 
-## 🌐 API Endpoint
+##  API Endpoint
 
 
 http://<load-balancer-dns>/api
@@ -213,7 +213,7 @@ Response:
 
 ---
 
-## 📚 What I Learned
+##  What I Learned
 
 - Cloud architecture design
 - Infrastructure as Code (Terraform)
@@ -224,7 +224,7 @@ Response:
 
 ---
 
-## 🧭 Future Improvements
+##  Future Improvements
 
 - Auto Scaling Group
 - HTTPS (SSL via ACM)
@@ -234,7 +234,7 @@ Response:
 
 ---
 
-## 👨‍💻 Author
+##  Author
 
 Daniel Williams  
 Cloud Engineer | Backend Developer  
