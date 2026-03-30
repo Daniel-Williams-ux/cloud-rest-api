@@ -1,10 +1,22 @@
 import express from "express";
+import helmet from 'helmet';
+import { logger } from './middleware/logger.js';
 import healthRoutes from "./routes/health.js";
 import echoRoutes from "./routes/echo.js";
+import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
-app.use(express.json());
-const PORT = 3000;
+
+// security first
+app.use(helmet()); 
+
+//converts raw request to JavaScript object
+app.use(express.json()); 
+
+//logger for basic observability
+app.use(logger);
+
+const PORT = process.env.PORT || 3000;
 
 // Root route
 app.get("/", (req, res) => {
@@ -14,8 +26,11 @@ app.get("/", (req, res) => {
 });
 
 // Plug routes
+app.use('/api', echoRoutes);
 app.use("/", healthRoutes);
-app.use("/", echoRoutes);
+
+// Error handler (MUST BE LAST)
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {
