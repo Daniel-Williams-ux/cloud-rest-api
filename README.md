@@ -68,15 +68,29 @@ http://api-alb-1809006527.us-east-1.elb.amazonaws.com
 
 ##  Project Structure
 
-├── terraform/ # Infrastructure as Code (VPC, EC2, ALB)
-├── app/ # Node.js REST API
-│ ├── routes/
-│ ├── controllers/
-│ └── server.js
-├── .github/
-│ └── workflows/ # CI/CD pipeline
-├── docs/ # Architecture & documentation
-└── README.md
+cloud-rest-api/
+│
+├── app/                  # Node.js API
+│   ├── routes/
+│   ├── middleware/
+│   ├── server.js
+│   └── package.json
+│
+├── infra/ (or terraform/)
+│   ├── vpc.tf
+│   ├── ec2.tf
+│   ├── alb.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│
+├── docs/
+│   └── images/
+│       ├── alb-api-response.png
+│       ├── target-group-healthy.png
+│       ├── ec2-instance-running.png
+│
+├── README.md 
+└── .gitignore
 
 
 ---
