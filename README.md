@@ -1,28 +1,13 @@
-#  Production-Ready Cloud REST API on AWS
+#  Cloud REST API on AWS (Production-Style Deployment)
 
-##  Project Summary
+##  Overview
 
-This project is a production-style cloud application designed and deployed on AWS using industry-standard practices.
+This project demonstrates deploying a production-style Node.js REST API on AWS using Infrastructure as Code (Terraform).
 
-It demonstrates the ability to:
-- Design cloud architecture from first principles
-- Deploy and manage backend services in the cloud
-- Automate infrastructure and deployments
-- Apply security and monitoring best practices
-
-This is not a tutorial project. It reflects how real systems are built and operated.
+The system is designed to reflect how backend services are exposed publicly through a load balancer, with proper networking, health checks, and traffic routing.
 
 ---
 
-##  What This Project Proves
-
-- I can design and explain cloud systems end-to-end
-- I understand AWS networking, compute, and security fundamentals
-- I can automate infrastructure using Terraform
-- I can implement CI/CD pipelines used in real teams
-- I can deploy, monitor, and maintain a live system
-
----
 
 ##  Architecture Overview
 
@@ -40,28 +25,40 @@ Client → Load Balancer → Application Server → Response
                    │ HTTP Request
                    ▼
         ┌────────────────────────┐
-        │ Application Load       │
-        │ Balancer (ALB)         │
+        │ Application Load       |
+        | Balancer (HTTP :80)    │
+        └────────┬───────────────┘
+                 |
+                 ▼
+        ┌────────────────────────┐
+        │    Target Group        |
+        |   (Health Checks)      │
         └────────┬───────────────┘
                  │
                  ▼
         ┌────────────────────────┐
         │   EC2 Instance         │
-        │  Node.js REST API      │
+        │    (Port 3000)         │
         └────────┬───────────────┘
                  │
                  ▼
         ┌────────────────────────┐
-        │   CloudWatch Logs      │
-        │   & Monitoring         │
+        │   Node.js REST API     |
+        |      (Express)         │
         └────────────────────────┘
 
 
 ---
 
-## ⚙️ Tech Stack
+## Live Endpoint
 
-- Cloud: AWS (EC2, ALB, VPC, IAM, CloudWatch)
+http://api-alb-1809006527.us-east-1.elb.amazonaws.com
+
+---
+
+##  Tech Stack
+
+- Cloud: AWS (EC2, ALB, Target Group, VPC, IAM, CloudWatch)
 - Backend: Node.js (Express)
 - Infrastructure as Code: Terraform
 - CI/CD: GitHub Actions
@@ -69,7 +66,7 @@ Client → Load Balancer → Application Server → Response
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ├── terraform/ # Infrastructure as Code (VPC, EC2, ALB)
 ├── app/ # Node.js REST API
@@ -84,15 +81,129 @@ Client → Load Balancer → Application Server → Response
 
 ---
 
-##  Key Features
+##  Infrastructure Design
 
-- Custom VPC with public subnets
-- Secure IAM roles (no hardcoded credentials)
-- Node.js API deployed on EC2
-- Application Load Balancer with health checks
-- Terraform-based infrastructure provisioning
-- Automated CI/CD pipeline (GitHub Actions)
-- CloudWatch logging and monitoring
+### Networking
+
+Custom VPC: 10.0.0.0/16
+Two public subnets across different Availability Zones
+Internet Gateway for outbound access
+Route table configured for public traffic
+
+### Compute
+EC2 instance running Node.js API
+Security group allows:
+SSH (restricted)
+HTTP (80)
+App traffic (3000)
+
+### Load Balancing
+
+Application Load Balancer (ALB)
+Listener on port 80
+Routes traffic to target group
+Target group forwards to EC2 on port 3000
+Health checks configured on /
+
+---
+
+## Request Flow
+
+Client sends HTTP request to ALB
+ALB receives traffic on port 80
+ALB forwards request to target group
+Target group selects healthy EC2 instance
+Request hits Node.js app on port 3000
+Response is returned to client
+
+---
+
+## Screenshots
+
+### ALB Response
+
+![alt text](docs/images/alb-response.png)
+
+
+### Target Group Health
+![alt text](docs/images/target-group-healthy.png)
+
+---
+
+## Key Engineering Decisions
+
+1. Multi-AZ Subnets
+
+The ALB is deployed across two availability zones to satisfy AWS requirements and improve availability.
+
+2. Load Balancer over Direct EC2 Exposure
+
+Instead of exposing EC2 directly, ALB is used to:
+
+Provide a stable public entry point
+Enable scaling later (multiple instances)
+Perform health checks
+3. Health Checks
+
+Target group health checks ensure traffic is only routed to healthy instances.
+
+---
+
+## Debugging (Real Issue Encountered)
+
+### Problem
+
+ALB returned 502 Bad Gateway
+
+Investigation
+Checked target group → instance was unhealthy
+Tested EC2 locally → app not responding on port 3000
+Root Cause
+
+Node.js application was not running on the EC2 instance
+
+### Fix
+
+Started the application manually:
+
+node server.js
+
+Verified with:
+
+curl http://localhost:3000
+Target group became healthy
+
+---
+
+## Local Development
+
+cd app
+npm install
+node server.js
+
+## Infrastructure Deployment
+
+cd project-infra
+terraform init
+terraform plan
+terraform apply
+
+---
+
+## Limitations
+Application does not auto-start on EC2 reboot
+No CI/CD pipeline yet
+No HTTPS (TLS) configured
+Single EC2 instance (no auto scaling)
+
+---
+
+## Next Improvements
+
+Add EC2 user-data or process manager (PM2) for auto-start
+Implement CI/CD with GitHub Actions
+Add HTTPS using ACM + ALB
+Introduce Auto Scaling Group
 
 ---
 
@@ -102,51 +213,6 @@ Client → Load Balancer → Application Server → Response
 - Least privilege access model
 - Security groups controlling traffic
 - No secrets stored in code
-
----
-
-## 🔄 CI/CD Pipeline
-
-Every push triggers:
-
-1. Code validation
-2. Build process
-3. Deployment to EC2
-4. Live system update
-
----
-
-##  Monitoring & Observability
-
-- Logs streamed to CloudWatch
-- Metrics tracked for system health
-- Designed for alerting and failure detection
-
----
-
-##  Key Engineering Decisions
-
-### Why EC2?
-
-- Full control over runtime environment
-- Suitable for long-running services
-- Clear demonstration of infrastructure knowledge
-
----
-
-### Why Terraform?
-
-- Infrastructure is version-controlled
-- Reproducible environments
-- Industry-standard DevOps tool
-
----
-
-### Why ALB?
-
-- Distributes incoming traffic efficiently
-- Enables health checks
-- Improves availability and reliability
 
 ---
 
@@ -189,14 +255,6 @@ npm run dev
 
 ---
 
-##  API Endpoint
-
-
-http://<load-balancer-dns>/api
-
-
----
-
 ## 🧪 Health Check
 
 
@@ -212,35 +270,9 @@ Response:
 
 
 ---
-
-##  What I Learned
-
-- Cloud architecture design
-- Infrastructure as Code (Terraform)
-- CI/CD pipeline implementation
-- AWS networking and security
-- Monitoring and observability
-- System design explanation for interviews
-
----
-
-##  Future Improvements
-
-- Auto Scaling Group
-- HTTPS (SSL via ACM)
-- Database integration (RDS or DynamoDB)
-- Docker containerization
-- Migration to ECS or Kubernetes
-
----
-
 ##  Author
 
 Daniel Williams  
 Cloud Engineer | Backend Developer  
 
 ---
-
-## 📌 Final Note
-
-This project reflects real-world cloud engineering practices and demonstrates readiness for 
