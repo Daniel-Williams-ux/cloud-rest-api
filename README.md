@@ -221,7 +221,7 @@ Introduce Auto Scaling Group
 
 ---
 
-## 🔐 Security Approach
+##  Security Approach
 
 - IAM roles instead of access keys
 - Least privilege access model
@@ -234,7 +234,7 @@ Introduce Auto Scaling Group
 
 ### Clone Repository
 
-git clone https://github.com/your-username/your-repo.git
+git clone https://github.com/Daniel-Williams-ux/cloud-rest-api.git
 
 cd your-repo
 
@@ -269,7 +269,7 @@ npm run dev
 
 ---
 
-## 🧪 Health Check
+##  Health Check
 
 
 GET /health

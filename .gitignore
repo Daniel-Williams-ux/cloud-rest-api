@@ -15,3 +15,8 @@ crash.log
 # Node.js
 node_modules/
 .env
+
+# SSH keys
+*.pem
+github-actions-key
+github-actions-key.pub
