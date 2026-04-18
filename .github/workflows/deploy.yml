@@ -16,7 +16,8 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
           script: |
-            cd cloud-rest-api
+            cd ~/cloud-rest-api || exit 1
             git pull origin main
             pm2 restart api || pm2 start app/server.js --name api
