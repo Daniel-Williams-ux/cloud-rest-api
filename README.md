@@ -52,7 +52,7 @@ Client → Load Balancer → Application Server → Response
 
 ## Live Endpoint
 
-http://api-alb-1809006527.us-east-1.elb.amazonaws.com
+http://api-alb-2009669405.us-east-1.elb.amazonaws.com
 
 ---
 
@@ -204,20 +204,43 @@ terraform apply
 
 ---
 
+## Deployment Architecture
+
+- CI/CD: GitHub Actions (SSH-based deployment)
+- Compute: AWS EC2 (Node.js application)
+- Process Manager: PM2 (with startup configuration)
+- Load Balancer: AWS Application Load Balancer (ALB)
+- Health Checks: `/health` endpoint for target group monitoring
+
+---
+
+## Health Check Design
+
+A dedicated `/health` endpoint is implemented to provide a stable and minimal signal for infrastructure monitoring.
+
+- Returns HTTP 200 with application status
+- Includes process uptime for basic observability
+- Used by ALB target group to determine instance health
+- Decoupled from business logic to avoid false negatives
+
+---
+
 ## Limitations
-Application does not auto-start on EC2 reboot
-No CI/CD pipeline yet
-No HTTPS (TLS) configured
-Single EC2 instance (no auto scaling)
+
+- No HTTPS (TLS) configured (HTTP only)
+- Single EC2 instance (no Auto Scaling Group yet)
+- No centralized logging/monitoring (e.g., CloudWatch integration incomplete)
+- No zero-downtime deployment strategy (basic restart via PM2)
 
 ---
 
 ## Next Improvements
 
-Add EC2 user-data or process manager (PM2) for auto-start
-Implement CI/CD with GitHub Actions
-Add HTTPS using ACM + ALB
-Introduce Auto Scaling Group
+- Add HTTPS using ACM + Application Load Balancer
+- Introduce Auto Scaling Group for horizontal scaling
+- Implement centralized logging with AWS CloudWatch
+- Improve deployment strategy (rolling or blue-green deployments)
+- Add monitoring and alerting (CloudWatch alarms)
 
 ---
 
