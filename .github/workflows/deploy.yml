@@ -18,6 +18,15 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            cd ~/cloud-rest-api || exit 1
+            cd ~
+            
+            if [ ! -d "cloud-rest-api" ]; then
+              git clone https://github.com/Daniel-Williams-ux/cloud-rest-api.git
+            fi
+
+            cd cloud-rest-api
+
             git pull origin main
+            npm install
+
             pm2 restart api || pm2 start app/server.js --name api
